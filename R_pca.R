@@ -98,9 +98,21 @@ victr_450_name <- victr_450.selected[,1]
 colnames(victr_450)<-victr_450_name
 
 victr_450.numeric = as.data.frame(sapply(victr_450,as.numeric))
+victr_450.numeric.selected = victr_450.numeric
+#check for 0 variance column
+no_var <- which(apply(victr_450, 2, var)==0)
+
+remove_col<- c(no_var[[1]])
+
+for(i in 2:length(no_var)){
+  remove_col <- c(remove_col,no_var[[i]])
+}
+
+victr_450.numeric.selected <- subset(victr_450.numeric.selected, select = -remove_col)
 
 #pca
-victr_450.pca <- prcomp(victr_450.numeric)
+victr_450.pca <- prcomp(victr_450.numeric.selected)
+victr_450.pca.scaled <- prcomp(victr_450.numeric.selected, scale = TRUE, center = TRUE)
 victr_450_name <- rownames(victr_450)
 
 #covariance and eigen value
@@ -111,6 +123,7 @@ victr_450.S_eigen <- eigen(victr_450.S)
 #lines(victr_450.S_eigen$values)
 
 summary(victr_450.pca)
+summary(victr_450.pca.scaled)
 
 screeplot(victr_450.pca, main="Scree Plot", xlab="Components")
 screeplot(victr_450.pca,type="line",main="Scree Plot")
@@ -118,8 +131,13 @@ screeplot(victr_450.pca,type="line",main="Scree Plot")
 biplot(victr_450.pca)
 biplot(victr_450.pca,choices=c(1,2),labels=victr_450_name)
 
-#varimax, selecting first 12 components
-loading <- victr_450.pca$rotation
-varimax.pca <- varimax(loading[,c(1:12)])
+#varimax, selecting first 12 components for pca/14 for pca.scaled
+ncomp <- 12
+loading <- victr_450.pca$rotation[,1:ncomp] %*% diag(victr_450.pca$sdev, ncomp, ncomp)
+varimax.pca <- varimax(loading)
+
+ncomp.scaled<-14
+loading.scaled <- victr_450.pca.scaled$rotation[,1:ncomp.scaled] %*% diag(victr_450.pca.scaled$sdev, ncomp, ncomp)
+varimax.pca.scaled <- varimax(loading.scaled)
 
 victr_450.rotated <- scale(victr_450.transposed) %*% varimax.pca$loadings
