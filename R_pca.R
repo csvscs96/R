@@ -137,7 +137,32 @@ loading <- victr_450.pca$rotation[,1:ncomp] %*% diag(victr_450.pca$sdev, ncomp, 
 varimax.pca <- varimax(loading)
 
 ncomp.scaled<-14
-loading.scaled <- victr_450.pca.scaled$rotation[,1:ncomp.scaled] %*% diag(victr_450.pca.scaled$sdev, ncomp, ncomp)
+loading.scaled <- victr_450.pca.scaled$rotation[,1:ncomp.scaled] %*% diag(victr_450.pca.scaled$sdev, ncomp.scaled, ncomp.scaled)
 varimax.pca.scaled <- varimax(loading.scaled)
 
-victr_450.rotated <- scale(victr_450.transposed) %*% varimax.pca$loadings
+#save the loading data to csv file in case it need further usage
+pathname <- "~/R/450K_Vandy_VICTR_sample/"
+filename <- "victr_450_loading"
+filepath=file.path(pathname,paste(filename,".csv",sep=""))
+write_csv(loading, filepath)
+
+#apply varimax
+victr_450.rotated <- scale(victr_450.numeric.selected) %*% varimax.pca$loadings
+
+#apply scaled varimax
+victr_450.rotated <- scale(victr_450.numeric.selected) %*% varimax.pca.scaled$loadings
+
+#generate colname 
+rot_name <- c(paste("PC",1,sep=""))
+for(i in 2:ncol(victr_450.rotated)){
+  rot_name <- c(rot_name,paste("PC",i,sep=""))
+}
+
+#apply column name
+colnames(victr_450.rotated)<-rot_name 
+
+#save the selected data to csv file in case it need further usage
+pathname <- "~/R/450K_Vandy_VICTR_sample/"
+filename <- "victr_450_rotated_pca"
+filepath=file.path(pathname,paste(filename,".csv",sep=""))
+write.csv(victr_450.rotated, filepath)
