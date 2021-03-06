@@ -2,7 +2,7 @@
 ## PROGRAMMER   Han-Tian Guo															                                                  
 ## STUDY        NHLBI Twin Study 													
 ## PURPOSE      Twin study data 450K PCA			  
-## DATE         Feburary 10th, 2020	
+## DATE         Feburary 10th, 2021	
 ## Email        hantianguo94@gmail.com													                                               
 ################################################################################################################
 
